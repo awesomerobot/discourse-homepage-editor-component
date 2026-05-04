@@ -1,0 +1,8 @@
+{
+  "name": "Discourse Homepage Editor",
+  "component": true,
+  "modifiers": {
+    "custom_homepage": "true",
+    "svg_icons": ["circle-half-stroke", "circle"]
+  }
+}

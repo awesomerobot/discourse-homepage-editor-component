@@ -1,0 +1,30 @@
+en:
+  theme_metadata:
+    description: "WYSIWYG homepage editor built on the Discourse blocks system. Lets admins compose and configure the custom homepage inline."
+    settings:
+      homepage_blocks: "JSON layout for the homepage. Edit on the homepage itself instead of here."
+  homepage_editor:
+    toolbar:
+      editing: "Editing homepage"
+      unsaved: "unsaved changes"
+      add: "Add"
+      cancel: "Cancel"
+      save: "Save"
+      saved: "Homepage saved"
+      edit: "Edit homepage"
+    picker:
+      title: "Choose a block type"
+    block:
+      configure: "Configure block"
+      configure_named: "Configure %{label}"
+      add: "Add block"
+      width:
+        half: "Half"
+        full: "Full"
+        switch_to_full: "Switch to full width"
+        switch_to_half: "Switch to half width"
+      move_up: "Move up"
+      move_down: "Move down"
+      delete: "Delete block"
+    form:
+      save: "Save"

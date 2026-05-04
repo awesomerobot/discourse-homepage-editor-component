@@ -1,0 +1,4 @@
+homepage_blocks:
+  default: '[{"type":"hero-banner","args":{"title":"Welcome","description":"Edit this homepage from the admin toolbar."}},{"type":"section-heading","args":{"title":"Latest topics","buttonLabel":"All topics","buttonLink":"/latest"}},{"type":"featured-list","args":{"filter":"latest","count":5}}]'
+  description: "Stores the homepage block layout. Edit on the homepage itself using the admin editor."
+  json_schema: '{"type":"array","items":{"type":"object","properties":{"type":{"type":"string"},"args":{"type":"object"}}}}'
