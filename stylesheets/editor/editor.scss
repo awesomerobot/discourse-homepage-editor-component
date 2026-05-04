@@ -61,23 +61,6 @@
   font-size: 0.85em;
 }
 
-.hpe-row__label-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  padding: 0.25em 0.5em;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--d-border-radius);
-  cursor: pointer;
-  color: var(--primary-medium);
-
-  &:hover {
-    background: var(--primary-low);
-    color: var(--primary);
-  }
-}
-
 .hpe-row__label {
   font-weight: bold;
 }

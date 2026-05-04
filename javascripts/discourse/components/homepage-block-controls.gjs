@@ -1,10 +1,8 @@
 import Component from "@glimmer/component";
 import { fn } from "@ember/helper";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
-import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { getBlockDef } from "../lib/block-registry";
 
@@ -43,9 +41,6 @@ export default class HomepageBlockControls extends Component {
     );
   }
 
-  get configureTitle() {
-    return i18n(themePrefix("homepage_editor.block.configure"));
-  }
 
   @action
   remove() {
@@ -64,15 +59,7 @@ export default class HomepageBlockControls extends Component {
 
   <template>
     <div class="hpe-row__controls">
-      <button
-        type="button"
-        class="hpe-row__label-button"
-        title={{this.configureTitle}}
-        {{on "click" this.openConfig}}
-      >
-        {{icon "gear"}}
-        <span class="hpe-row__label">{{this.label}}</span>
-      </button>
+      <span class="hpe-row__label">{{this.label}}</span>
       <div class="hpe-row__buttons">
         <DButton
           class="btn-flat hpe-row__width-toggle"
@@ -92,6 +79,12 @@ export default class HomepageBlockControls extends Component {
           @icon="arrow-down"
           @action={{fn this.homepageEditor.moveBlock @index 1}}
           @title={{themePrefix "homepage_editor.block.move_down"}}
+        />
+        <DButton
+          class="btn-flat"
+          @icon="gear"
+          @action={{this.openConfig}}
+          @title={{themePrefix "homepage_editor.block.configure"}}
         />
         <DButton
           class="btn-flat btn-danger"
