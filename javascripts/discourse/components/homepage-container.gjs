@@ -51,26 +51,21 @@ export default class HomepageContainer extends Component {
       {{/if}}
 
       <div class="hpe-homepage__rows">
-        {{#each this.homepageEditor.rowsForRender key="@index" as |row|}}
-          {{#if (eq row.type "full")}}
-            <HomepageRenderedBlock @entry={{row.entry}} @index={{row.index}} />
+        {{#each this.homepageEditor.itemsForRender key="key" as |item|}}
+          {{#if (eq item.kind "empty-half")}}
+            <div class="hpe-row hpe-row--half hpe-row--empty">
+              <DButton
+                class="btn-default hpe-row--empty__add"
+                @action={{fn this.homepageEditor.openPicker item.afterIndex}}
+                @icon="plus"
+                @label={{themePrefix "homepage_editor.block.add"}}
+              />
+            </div>
           {{else}}
-            {{#each row.slots key="index" as |slot|}}
-              <HomepageRenderedBlock @entry={{slot.entry}} @index={{slot.index}} />
-            {{/each}}
-            {{#if (eq row.slots.length 1)}}
-              <div class="hpe-row hpe-row--half hpe-row--empty">
-                <DButton
-                  class="btn-default hpe-row--empty__add"
-                  @action={{fn
-                    this.homepageEditor.openPicker
-                    row.lonelyAfterIndex
-                  }}
-                  @icon="plus"
-                  @label={{themePrefix "homepage_editor.block.add"}}
-                />
-              </div>
-            {{/if}}
+            <HomepageRenderedBlock
+              @entry={{item.entry}}
+              @index={{item.index}}
+            />
           {{/if}}
         {{/each}}
       </div>

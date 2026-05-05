@@ -24,6 +24,17 @@ function defaultArgsFor(type) {
   return args;
 }
 
+function generateId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `b_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+function withId(entry) {
+  return entry.id ? entry : { ...entry, id: generateId() };
+}
+
 // Group consecutive half-width blocks into pairs (max 2 per row).
 // Full-width blocks each get their own row.
 function rowsFromLayout(layout) {
@@ -67,7 +78,7 @@ export default class HomepageEditor extends Service {
     const raw = rawSetting || "[]";
     try {
       const parsed = JSON.parse(raw);
-      this.layout = Array.isArray(parsed) ? parsed : [];
+      this.layout = Array.isArray(parsed) ? parsed.map(withId) : [];
     } catch {
       this.layout = [];
     }
@@ -128,7 +139,10 @@ export default class HomepageEditor extends Service {
 
   @action
   addBlock(type) {
-    this.layout = [...this.layout, { type, args: defaultArgsFor(type) }];
+    this.layout = [
+      ...this.layout,
+      { id: generateId(), type, args: defaultArgsFor(type) },
+    ];
     this.dirty = true;
   }
 
@@ -136,6 +150,7 @@ export default class HomepageEditor extends Service {
   insertHalfBlockAfter(type, afterIndex) {
     const next = this.layout.slice();
     next.splice(afterIndex + 1, 0, {
+      id: generateId(),
       type,
       args: defaultArgsFor(type),
       width: "half",
@@ -188,25 +203,28 @@ export default class HomepageEditor extends Service {
   }
 
   @cached
-  get rowsForRender() {
-    return rowsFromLayout(this.layout).map((row) => {
-      if (row.width === "half") {
-        const slots = row.indices.map((i) => ({
-          entry: this.layout[i],
+  get itemsForRender() {
+    const items = [];
+    rowsFromLayout(this.layout).forEach((row) => {
+      row.indices.forEach((i) => {
+        const entry = this.layout[i];
+        items.push({
+          kind: "block",
+          entry,
           index: i,
-        }));
-        return {
-          type: "halves",
-          slots,
-          lonelyAfterIndex: slots.length === 1 ? slots[0].index : null,
-        };
+          key: entry.id,
+        });
+      });
+      if (row.width === "half" && row.indices.length === 1) {
+        const i = row.indices[0];
+        items.push({
+          kind: "empty-half",
+          afterIndex: i,
+          key: `empty-${this.layout[i].id}`,
+        });
       }
-      return {
-        type: "full",
-        entry: this.layout[row.indices[0]],
-        index: row.indices[0],
-      };
     });
+    return items;
   }
 
   @action
