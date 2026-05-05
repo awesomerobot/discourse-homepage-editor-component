@@ -12,6 +12,8 @@ en:
       save: "Save"
       saved: "Homepage saved"
       edit: "Edit homepage"
+      welcome_banner: "Welcome banner"
+      welcome_banner_config: "Configure welcome banner"
     picker:
       title: "Choose a block type"
     block:

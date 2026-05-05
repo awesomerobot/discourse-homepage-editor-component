@@ -122,6 +122,7 @@ export const BLOCK_REGISTRY = {
   leaderboard: {
     component: BlockLeaderboard,
     label: "Leaderboard",
+    requiresSetting: "discourse_gamification_enabled",
     fields: [
       { name: "title", label: "Title override", type: "text" },
       { name: "leaderboardId", label: "Leaderboard ID", type: "number" },
@@ -141,11 +142,24 @@ export const BLOCK_REGISTRY = {
   },
 };
 
-export function blockTypes() {
-  return Object.entries(BLOCK_REGISTRY).map(([key, def]) => ({
-    type: key,
-    label: def.label,
-  }));
+export function isBlockAvailable(type, siteSettings) {
+  const def = BLOCK_REGISTRY[type];
+  if (!def) {
+    return false;
+  }
+  if (def.requiresSetting && !siteSettings?.[def.requiresSetting]) {
+    return false;
+  }
+  return true;
+}
+
+export function blockTypes(siteSettings) {
+  return Object.entries(BLOCK_REGISTRY)
+    .filter(([key]) => isBlockAvailable(key, siteSettings))
+    .map(([key, def]) => ({
+      type: key,
+      label: def.label,
+    }));
 }
 
 export function getBlockDef(type) {

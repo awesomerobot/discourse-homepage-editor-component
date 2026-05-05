@@ -1,16 +1,20 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
-import { getBlockDef } from "../lib/block-registry";
+import { getBlockDef, isBlockAvailable } from "../lib/block-registry";
 import HomepageBlockControls from "./homepage-block-controls";
 
 export default class HomepageRenderedBlock extends Component {
   @service homepageEditor;
+  @service siteSettings;
 
   get def() {
     return getBlockDef(this.args.entry.type);
   }
 
   get componentClass() {
+    if (!isBlockAvailable(this.args.entry.type, this.siteSettings)) {
+      return null;
+    }
     return this.def?.component;
   }
 

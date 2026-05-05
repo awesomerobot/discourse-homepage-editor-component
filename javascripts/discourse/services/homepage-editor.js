@@ -3,6 +3,7 @@ import { action } from "@ember/object";
 import Service, { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { currentThemeId } from "discourse/lib/theme-selector";
 import { i18n } from "discourse-i18n";
 import { getBlockDef } from "../lib/block-registry";
 
@@ -46,6 +47,7 @@ function rowsFromLayout(layout) {
 
 export default class HomepageEditor extends Service {
   @service currentUser;
+  @service siteSettings;
   @service toasts;
 
   @tracked layout = [];
@@ -55,9 +57,11 @@ export default class HomepageEditor extends Service {
   @tracked picking = false;
   @tracked pickerInsertAfter = null;
   @tracked configuringIndex = null;
+  @tracked welcomeBannerEnabled = false;
 
   themeId = null;
   _savedSnapshot = "[]";
+  _savedWelcomeBannerEnabled = false;
 
   load(rawSetting) {
     const raw = rawSetting || "[]";
@@ -68,6 +72,8 @@ export default class HomepageEditor extends Service {
       this.layout = [];
     }
     this._savedSnapshot = JSON.stringify(this.layout);
+    this.welcomeBannerEnabled = !!this.siteSettings.enable_welcome_banner;
+    this._savedWelcomeBannerEnabled = this.welcomeBannerEnabled;
     this.dirty = false;
 
     if (this.canEdit) {
@@ -87,11 +93,18 @@ export default class HomepageEditor extends Service {
   @action
   cancelEditing() {
     this.layout = JSON.parse(this._savedSnapshot);
+    this.welcomeBannerEnabled = this._savedWelcomeBannerEnabled;
     this.dirty = false;
     this.editing = false;
     this.configuringIndex = null;
     this.picking = false;
     this.pickerInsertAfter = null;
+  }
+
+  @action
+  toggleWelcomeBanner() {
+    this.welcomeBannerEnabled = !this.welcomeBannerEnabled;
+    this.dirty = true;
   }
 
   @action
@@ -264,6 +277,29 @@ export default class HomepageEditor extends Service {
     return this.themeId;
   }
 
+  async saveWelcomeBannerSettings() {
+    if (this.welcomeBannerEnabled === this._savedWelcomeBannerEnabled) {
+      return;
+    }
+    const parentThemeId = currentThemeId();
+    if (!parentThemeId) {
+      throw new Error("Could not resolve current theme id.");
+    }
+    await ajax(`/admin/themes/${parentThemeId}/site-setting`, {
+      type: "PUT",
+      data: { name: "enable_welcome_banner", value: this.welcomeBannerEnabled },
+    });
+    this.siteSettings.enable_welcome_banner = this.welcomeBannerEnabled;
+    if (this.welcomeBannerEnabled) {
+      await ajax("/admin/site_settings/welcome_banner_page_visibility", {
+        type: "PUT",
+        data: { welcome_banner_page_visibility: "homepage" },
+      });
+      this.siteSettings.welcome_banner_page_visibility = "homepage";
+    }
+    this._savedWelcomeBannerEnabled = this.welcomeBannerEnabled;
+  }
+
   @action
   async save() {
     if (this.saving) {
@@ -278,6 +314,7 @@ export default class HomepageEditor extends Service {
         data: { name: SETTING_NAME, value: payload },
       });
       this._savedSnapshot = payload;
+      await this.saveWelcomeBannerSettings();
       this.dirty = false;
       this.editing = false;
       this.toasts.success({

@@ -11,6 +11,10 @@
   }
 }
 
+body.hpe-hide-welcome-banner .welcome-banner {
+  display: none;
+}
+
 .hpe-row {
   position: relative;
 

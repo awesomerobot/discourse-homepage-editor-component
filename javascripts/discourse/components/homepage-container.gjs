@@ -4,6 +4,7 @@ import { service } from "@ember/service";
 import { block } from "discourse/blocks";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
+import bodyClass from "discourse/helpers/body-class";
 import { i18n } from "discourse-i18n";
 import { eq } from "truth-helpers";
 import { getBlockDef } from "../lib/block-registry";
@@ -37,6 +38,10 @@ export default class HomepageContainer extends Component {
   }
 
   <template>
+    {{#unless this.homepageEditor.welcomeBannerEnabled}}
+      {{bodyClass "hpe-hide-welcome-banner"}}
+    {{/unless}}
+
     <div
       class="hpe-homepage"
       data-editing={{if this.homepageEditor.editing "true"}}
