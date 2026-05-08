@@ -78,6 +78,22 @@
     border: 1px dashed var(--primary-low);
     border-radius: var(--d-border-radius);
     padding: 0.5em;
+
+    .discourse-no-touch & {
+      &:hover {
+        border: 1px solid var(--tertiary);
+
+        .hpe-row__controls {
+          background: var(--tertiary);
+          color: var(--secondary);
+          --d-button-default-text-color: var(--secondary);
+          --d-button-flat-icon-color: var(--secondary);
+          --d-button-flat-text-color--hover: var(--secondary);
+          --d-button-flat-icon-color--hover: var(--secondary);
+          --d-button-flat-bg-color--hover: var(--tertiary-hover);
+        }
+      }
+    }
   }
 
   .hpe-toolbar {
